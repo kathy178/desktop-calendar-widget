@@ -27,19 +27,19 @@ export default function WidgetCapsule(): JSX.Element {
   }, [todos, memos])
 
   return (
-    <div className={`${styles.capsule} drag-region`}>
-      <div className={styles.left}>
+    <div className={styles.capsule}>
+      <div className={`${styles.left} drag-region`}>
         <span className={styles.date}>{todayKey.slice(5).replace('-', '/')}</span>
         <span className={styles.count}>剩余 {pendingCount} 项</span>
       </div>
-      <div className={styles.latest}>{latestLabel}</div>
       <button
-        className={`${styles.expandBtn} no-drag`}
+        className={`${styles.expandArea} no-drag`}
         onClick={() => setCollapsed(false)}
-        aria-label="展开"
+        aria-label="展开完整面板"
         title="展开完整面板"
       >
-        ▸
+        <span className={styles.latest}>{latestLabel}</span>
+        <span className={styles.arrow}>▸</span>
       </button>
     </div>
   )

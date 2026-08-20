@@ -1,6 +1,6 @@
 {
   "name": "desktop-calendar-widget",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Windows 桌面悬浮日历与备忘录工具",
   "main": "out/main/index.js",
   "author": "kathy178",

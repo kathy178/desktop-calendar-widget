@@ -17,6 +17,9 @@
   flex-direction: column;
   line-height: 1.2;
   flex-shrink: 0;
+  /* 这一块保留拖拽（用来在收起态调整小组件在屏幕上的位置），
+     右侧的可点击区域（.expandArea）单独用 no-drag 覆盖，两者不冲突 */
+  cursor: move;
 }
 
 .date {
@@ -30,16 +33,37 @@
   color: var(--color-text-secondary);
 }
 
+.expandArea {
+  /* 之前只有右边那个箭头符号（没有设置任何最小尺寸）能点击展开，命中率很低。
+     现在把"最新一条待办/备忘录文字 + 箭头"整体做成一个大按钮，
+     点这一整片区域的任何位置都能展开，不用再精准对准一个几像素的小箭头。 */
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.expandArea:hover {
+  background: var(--color-hover);
+}
+
 .latest {
   flex: 1;
+  min-width: 0;
   font-size: var(--font-sm);
   color: var(--color-text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: left;
 }
 
-.expandBtn {
+.arrow {
   color: var(--color-muted);
   font-size: 14px;
   flex-shrink: 0;
