@@ -24,7 +24,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # 不启用 actions/setup-node 自带的 npm 缓存：
+          # 该缓存机制会让 npm 使用一个自定义缓存目录（C:\npm\cache），
+          # 目前观察到这与 Windows 运行器上 npm 稳定复现的 "Exit handler never called!" 假死 bug相关。
+          # 项目依赖不多，不开缓存对构建耗时影响很小。
 
       - name: 升级 npm
         # Node 20.x 自带的 npm 10.8.2 在 Windows 运行器上有一个已知 bug（npm/cli#7657）：
