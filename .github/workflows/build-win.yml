@@ -29,8 +29,10 @@ jobs:
       - name: 升级 npm
         # Node 20.x 自带的 npm 10.8.2 在 Windows 运行器上有一个已知 bug（npm/cli#7657）：
         # npm ci 会假死并抛出 "Exit handler never called!"，
-        # 导致 node_modules/.bin 没有完整生成。升级到修复后的新版本即可解决。
-        run: npm install -g npm@latest
+        # 导致 node_modules/.bin 没有完整生成。
+        # 这里固定升级到一个已修复该问题、且仍兼容 Node 20 的版本（npm@latest 在此时已升级到
+        # 要求 Node 22+ 的 npm 12，会与 Node 20 不兼容，因此显式指定版本号而不是用 latest）。
+        run: npm install -g npm@10.9.2
 
       - name: 安装依赖
         run: npm ci
