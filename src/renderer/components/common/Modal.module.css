@@ -1,5 +1,12 @@
 .overlay {
-  position: absolute;
+  /* 用 fixed 而不是 absolute：
+     这个弹窗有两个触发入口——点击已有条目编辑（外层没有任何 position 祖先，
+     absolute 时会"意外"落到整个视口，凑巧是对的）；和右下角"+"按钮新建
+     （外层的悬浮按钮容器本身是 position:absolute 定位在右下角的一个几十像素的小盒子，
+     会把 absolute+inset:0 的弹窗"框"在那个小盒子里，导致新建面板几乎不可见）。
+     改成 fixed 后，定位只会被 transform/filter/perspective 之类的祖先影响，
+     普通的 position:absolute 祖先不会再"劫持"它，两个入口表现一致。 */
+  position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.28);
   display: flex;

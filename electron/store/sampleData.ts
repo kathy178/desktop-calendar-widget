@@ -3,7 +3,13 @@ import { genId } from '../../shared/id'
 import type { CountdownEvent, Memo, Todo } from '../../shared/types'
 
 function fmt(date: Date): string {
-  return date.toISOString().slice(0, 10)
+  // 注意：不用 toISOString().slice(0,10)——那取的是 UTC 日期。
+  // 在东八区这类正时区下，本地时间凌晨到早上8点这段时间，UTC 日期还停留在"昨天"，
+  // 会导致这里生成的"今天"示例待办被排到"已逾期"分组里，而不是"今天"分组。
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
 }
 
 export function buildSampleData(): { todos: Todo[]; memos: Memo[]; countdowns: CountdownEvent[] } {

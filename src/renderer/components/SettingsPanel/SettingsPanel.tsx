@@ -63,14 +63,8 @@ export default function SettingsPanel(): JSX.Element {
               onChange={(v) => updateSettings({ autoCollapseWidget: v })}
             />
           </Row>
-          <Row label="点击穿透（鼠标穿过窗口点击后面的内容）">
-            <Switch
-              checked={settings.clickThrough}
-              onChange={(v) => {
-                updateSettings({ clickThrough: v })
-                window.api.window.setClickThrough(v)
-              }}
-            />
+          <Row label="点击穿透（收起为小组件时，鼠标可穿过它点击后面的内容）">
+            <Switch checked={settings.clickThrough} onChange={(v) => updateSettings({ clickThrough: v })} />
           </Row>
         </Section>
 

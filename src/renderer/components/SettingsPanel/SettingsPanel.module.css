@@ -1,5 +1,6 @@
 .panel {
-  position: absolute;
+  /* 跟 Modal 用同样的 fixed 定位，理由一致：不依赖"祖先恰好没有 position"这种偶然成立的条件 */
+  position: fixed;
   inset: 0;
   background: var(--color-panel-solid);
   display: flex;

@@ -19,15 +19,20 @@ const MiniMonth = memo(function MiniMonth({
   const days = useMemo(() => getMonthGridDays(monthAnchorForThis), [monthAnchorForThis])
   const setSelectedDate = useAppStore((s) => s.setSelectedDate)
   const setCalendarViewMode = useAppStore((s) => s.setCalendarViewMode)
+  const setActiveTab = useAppStore((s) => s.setActiveTab)
 
   function jumpToMonth(): void {
+    // 点月份标题：只切换日历范围到那个月，不动底部当前正在看的标签页
     setSelectedDate(toDateKey(monthAnchorForThis))
     setCalendarViewMode('month')
   }
 
   function jumpToDay(date: Date): void {
+    // 点具体某一天：既切到月视图，也顺手把底部标签切到"今日"，直接看到那天的日程，
+    // 不用再多点一次
     setSelectedDate(toDateKey(date))
     setCalendarViewMode('month')
+    setActiveTab('today')
   }
 
   return (

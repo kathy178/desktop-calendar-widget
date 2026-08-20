@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAppStore } from '../../store/useAppStore'
 import TodoEditModal from '../TodoPanel/TodoEditModal'
 import MemoEditModal from '../MemoPanel/MemoEditModal'
@@ -9,9 +9,22 @@ export default function QuickAddButton(): JSX.Element {
   const selectedDate = useAppStore((s) => s.selectedDate)
   const [menuOpen, setMenuOpen] = useState(false)
   const [mode, setMode] = useState<'todo' | 'memo' | 'countdown' | null>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+
+  // 点击菜单以外的任何地方，自动收起菜单，避免菜单一直悬在那里像卡住了一样
+  useEffect(() => {
+    if (!menuOpen) return
+    function handlePointerDown(e: MouseEvent): void {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handlePointerDown)
+    return () => document.removeEventListener('mousedown', handlePointerDown)
+  }, [menuOpen])
 
   return (
-    <div className={`${styles.wrapper} no-drag`}>
+    <div ref={wrapperRef} className={`${styles.wrapper} no-drag`}>
       {menuOpen && (
         <div className={styles.menu}>
           <button

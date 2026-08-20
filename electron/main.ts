@@ -71,9 +71,12 @@ function registerWindowIpc(win: BrowserWindow): void {
   })
 
   ipcMain.on(IPC.WINDOW_SET_CLICK_THROUGH, (_e, value: boolean) => {
+    // 注意：这里只应用"实际生效值"，不写回 settings。
+    // 渲染进程（useWidgetMode）会根据"是否收起成小胶囊"动态计算出这个生效值再调用这里——
+    // 比如用户勾选了点击穿透偏好，但当前完整面板正展开着，这里收到的实际是 false（強制关闭），
+    // 如果在这里把 false 存回 settings.clickThrough，会错误覆盖用户真正的偏好设置。
+    // 用户的偏好本身通过 settings:update 这个通用通道保存，跟这里完全分开。
     setClickThrough(value)
-    const settings = getSettings()
-    updateSettings({ ...settings, clickThrough: value })
   })
 
   ipcMain.on(IPC.WINDOW_EXPAND_WIDGET, () => expandWidget())
@@ -90,10 +93,17 @@ function registerWindowIpc(win: BrowserWindow): void {
     if (!todo) return
     const base = todo.date && todo.time ? new Date(`${todo.date}T${todo.time}:00`) : new Date()
     const next = new Date(base.getTime() + minutes * 60_000)
+    // 注意：这里故意不用 toISOString()（那是 UTC 时间），todo.date/time 全项目都是按本地时间处理的，
+    // 用 UTC 换算会在东八区这类正时区下导致稍后提醒实际触发时间整体偏移几个小时。
+    const y = next.getFullYear()
+    const mo = String(next.getMonth() + 1).padStart(2, '0')
+    const d = String(next.getDate()).padStart(2, '0')
+    const hh = String(next.getHours()).padStart(2, '0')
+    const mm = String(next.getMinutes()).padStart(2, '0')
     updateTodo({
       ...todo,
-      date: next.toISOString().slice(0, 10),
-      time: next.toISOString().slice(11, 16),
+      date: `${y}-${mo}-${d}`,
+      time: `${hh}:${mm}`,
       reminderFiredAt: null
     })
   })

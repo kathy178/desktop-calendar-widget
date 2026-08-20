@@ -47,6 +47,13 @@ export default function TodoEditModal({
 
   const canSave = title.trim().length > 0
 
+  function handleDateChange(value: string): void {
+    setDate(value)
+    // 日期被清空时，提醒本身也没有意义了（没有日期就没法算提醒时间点），
+    // 顺手把提醒重置掉，避免存下一条"没有日期却挂着提醒"的脏数据
+    if (!value) setReminderMinutes(-1)
+  }
+
   async function handleSave(): Promise<void> {
     if (!canSave || saving) return
     setSaving(true)
@@ -123,7 +130,7 @@ export default function TodoEditModal({
       <div className={formStyles.row} style={{ marginBottom: 14 }}>
         <div className={formStyles.field} style={{ marginBottom: 0 }}>
           <span className={formStyles.label}>日期</span>
-          <input className={formStyles.input} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <input className={formStyles.input} type="date" value={date} onChange={(e) => handleDateChange(e.target.value)} />
         </div>
         <div className={formStyles.field} style={{ marginBottom: 0 }}>
           <span className={formStyles.label}>时间（可选）</span>
