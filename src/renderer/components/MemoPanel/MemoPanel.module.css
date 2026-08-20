@@ -1,0 +1,79 @@
+.panel {
+  padding: 4px 14px 90px;
+}
+
+.searchBar {
+  position: sticky;
+  top: 0;
+  padding: 4px 0 8px;
+  background: transparent;
+  z-index: 1;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-solid);
+  color: var(--color-text);
+}
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card {
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-weight: 600;
+  font-size: var(--font-base);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pinBtn {
+  font-size: 12px;
+  opacity: 0.35;
+  flex-shrink: 0;
+}
+.pinBtnActive {
+  opacity: 1;
+}
+
+.cardContent {
+  margin: 6px 0 4px;
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-wrap;
+}
+
+.cardFooter {
+  display: flex;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--color-muted);
+}

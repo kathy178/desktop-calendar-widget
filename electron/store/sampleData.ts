@@ -1,0 +1,90 @@
+/** 首次启动时的示例数据，帮助用户直观理解功能，而不是打开就是空白 */
+import { nanoid } from 'nanoid'
+import type { Memo, Todo } from '../../shared/types'
+
+function fmt(date: Date): string {
+  return date.toISOString().slice(0, 10)
+}
+
+export function buildSampleData(): { todos: Todo[]; memos: Memo[] } {
+  const now = new Date()
+  const today = fmt(now)
+  const tomorrow = fmt(new Date(now.getTime() + 24 * 3600 * 1000))
+  const nowIso = now.toISOString()
+
+  const todos: Todo[] = [
+    {
+      id: nanoid(),
+      title: '欢迎使用桌面悬浮日历 —— 点击我可以编辑或完成',
+      date: today,
+      time: '09:30',
+      priority: 'medium',
+      tags: ['指引'],
+      repeat: 'none',
+      reminder: { enabled: true, minutesBefore: 10 },
+      completed: false,
+      completedAt: null,
+      createdAt: nowIso,
+      updatedAt: nowIso,
+      reminderFiredAt: null
+    },
+    {
+      id: nanoid(),
+      title: '周会材料准备',
+      date: today,
+      time: '14:00',
+      priority: 'high',
+      tags: ['工作'],
+      repeat: 'weekly',
+      reminder: { enabled: true, minutesBefore: 15 },
+      completed: false,
+      completedAt: null,
+      createdAt: nowIso,
+      updatedAt: nowIso,
+      reminderFiredAt: null
+    },
+    {
+      id: nanoid(),
+      title: '给自己倒杯水，起来走动一下',
+      date: tomorrow,
+      time: null,
+      priority: 'low',
+      tags: ['生活'],
+      repeat: 'daily',
+      reminder: null,
+      completed: false,
+      completedAt: null,
+      createdAt: nowIso,
+      updatedAt: nowIso,
+      reminderFiredAt: null
+    }
+  ]
+
+  const memos: Memo[] = [
+    {
+      id: nanoid(),
+      title: '使用小提示',
+      content:
+        '右下角「+」可以快速新增待办或备忘录；把鼠标移到收起的小组件上会自动展开完整面板；设置里可以调整透明度、置顶和点击穿透。',
+      linkedDate: null,
+      tags: ['指引'],
+      color: 'blue',
+      pinned: true,
+      createdAt: nowIso,
+      updatedAt: nowIso
+    },
+    {
+      id: nanoid(),
+      title: '临时记录',
+      content: '这是一条示例备忘录，可以随时编辑或删除。',
+      linkedDate: today,
+      tags: [],
+      color: 'yellow',
+      pinned: false,
+      createdAt: nowIso,
+      updatedAt: nowIso
+    }
+  ]
+
+  return { todos, memos }
+}

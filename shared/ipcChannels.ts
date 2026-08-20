@@ -1,0 +1,24 @@
+/** 集中管理 IPC 通道名，避免主进程/渲染进程两边字符串拼错导致的静默失效 */
+export const IPC = {
+  DATA_GET_ALL: 'data:getAll',
+  TODO_CREATE: 'todo:create',
+  TODO_UPDATE: 'todo:update',
+  TODO_REMOVE: 'todo:remove',
+  MEMO_CREATE: 'memo:create',
+  MEMO_UPDATE: 'memo:update',
+  MEMO_REMOVE: 'memo:remove',
+  SETTINGS_UPDATE: 'settings:update',
+  BACKUP_EXPORT: 'backup:export',
+  BACKUP_IMPORT: 'backup:import',
+  WINDOW_SET_ALWAYS_ON_TOP: 'window:setAlwaysOnTop',
+  WINDOW_SET_CLICK_THROUGH: 'window:setClickThrough',
+  WINDOW_SET_OPACITY: 'window:setOpacity',
+  WINDOW_EXPAND_WIDGET: 'window:expandWidget',
+  WINDOW_COLLAPSE_WIDGET: 'window:collapseWidget',
+  WINDOW_MINIMIZE: 'window:minimize',
+  WINDOW_CLOSE: 'window:close',
+  REMINDER_SNOOZE: 'reminder:snooze',
+  REMINDER_COMPLETE: 'reminder:complete',
+  REMINDER_FIRE: 'reminder:fire',
+  SYSTEM_GET_PLATFORM: 'system:getPlatform'
+} as const

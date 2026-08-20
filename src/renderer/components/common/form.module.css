@@ -1,0 +1,130 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.label {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+}
+
+.input,
+.textarea,
+.select {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: var(--color-bg-solid);
+  color: var(--color-text);
+  width: 100%;
+}
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.textarea {
+  resize: none;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+.row > * {
+  flex: 1;
+}
+
+.segmented {
+  display: flex;
+  gap: 6px;
+}
+.segmentBtn {
+  flex: 1;
+  padding: 7px 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: var(--font-sm);
+  text-align: center;
+}
+.segmentBtnActive {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.tagInputRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.tagChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--color-hover);
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+}
+.tagChipRemove {
+  font-size: 12px;
+  line-height: 1;
+  color: var(--color-muted);
+}
+.tagInput {
+  border: none;
+  background: none;
+  font-size: var(--font-sm);
+  flex: 1;
+  min-width: 60px;
+  color: var(--color-text);
+}
+.tagInput:focus {
+  outline: none;
+}
+
+.primaryBtn {
+  background: var(--color-accent);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-base);
+  font-weight: 500;
+}
+.primaryBtn:hover {
+  filter: brightness(1.05);
+}
+.primaryBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--font-base);
+}
+.secondaryBtn:hover {
+  background: var(--color-hover);
+}
+
+.dangerBtn {
+  color: var(--color-danger);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-base);
+}
+.dangerBtn:hover {
+  background: var(--color-danger-soft);
+}
