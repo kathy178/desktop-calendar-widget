@@ -9,6 +9,13 @@ on:
 jobs:
   build-win:
     runs-on: windows-latest
+    defaults:
+      run:
+        # Windows 运行器默认用 PowerShell 执行 run 步骤，
+        # 这会触发 npm 在 Windows 上一个已知的 "Exit handler never called!" 假死/误报 bug，
+        # 导致 npm ci 表面上"成功"但 node_modules/.bin 没有完整生成，后续 tsc 命令找不到。
+        # 改用 Git Bash（Windows 运行器自带）执行可以规避这个问题。
+        shell: bash
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
