@@ -11,8 +11,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.node.json --composite false && tsc --noEmit -p tsconfig.web.json --composite false",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "vitest run",
-    "build:win": "npm run build && electron-builder --win --x64",
-    "build:win:portable": "npm run build && electron-builder --win portable --x64"
+    "build:win": "npm run build && electron-builder --win --x64 --publish=never",
+    "build:win:portable": "npm run build && electron-builder --win portable --x64 --publish=never"
   },
   "dependencies": {
     "date-fns": "^3.6.0",

@@ -1,5 +1,7 @@
 appId: com.kathy178.desktopcalendarwidget
 productName: 桌面悬浮日历
+# 只在本地/CI 生成安装包文件，不发布到 GitHub Releases（不需要配置 GH_TOKEN）
+publish: null
 directories:
   output: release
   buildResources: build
