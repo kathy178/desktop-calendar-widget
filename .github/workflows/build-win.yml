@@ -9,13 +9,6 @@ on:
 jobs:
   build-win:
     runs-on: windows-latest
-    defaults:
-      run:
-        # Windows 运行器默认用 PowerShell 执行 run 步骤，
-        # 这会触发 npm 在 Windows 上一个已知的 "Exit handler never called!" 假死/误报 bug，
-        # 导致 npm ci 表面上"成功"但 node_modules/.bin 没有完整生成，后续 tsc 命令找不到。
-        # 改用 Git Bash（Windows 运行器自带）执行可以规避这个问题。
-        shell: bash
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -24,35 +17,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # 不启用 actions/setup-node 自带的 npm 缓存：
-          # 该缓存机制会让 npm 使用一个自定义缓存目录（C:\npm\cache），
-          # 目前观察到这与 Windows 运行器上 npm 稳定复现的 "Exit handler never called!" 假死 bug相关。
-          # 项目依赖不多，不开缓存对构建耗时影响很小。
-
-      - name: 升级 npm
-        # Node 20.x 自带的 npm 10.8.2 在 Windows 运行器上有一个已知 bug（npm/cli#7657）：
-        # npm ci 会假死并抛出 "Exit handler never called!"，
-        # 导致 node_modules/.bin 没有完整生成。
-        # 这里固定升级到一个已修复该问题、且仍兼容 Node 20 的版本（npm@latest 在此时已升级到
-        # 要求 Node 22+ 的 npm 12，会与 Node 20 不兼容，因此显式指定版本号而不是用 latest）。
-        run: npm install -g npm@10.9.2
 
       - name: 安装依赖
-        # 这里刻意用 npm install 而不是 npm ci：
-        # npm ci 在这个 Windows 运行器环境下即使升级了 npm 版本仍然会稳定触发
-        # "Exit handler never called!" 假死 bug（npm/cli#7657 及一系列类似 issue），
-        # 而 npm install 走的是不同的内部实现路径，不受影响。
-        # 项目有提交 package-lock.json，npm install 同样会按锁定的版本精确安装。
-        run: npm install --no-audit --no-fund
+        # 说明：这里用 yarn（Windows 运行器自带 1.22.22，无需额外安装）而不是 npm。
+        # 排查记录：在当前 windows-latest 运行器镜像上，无论是 npm ci 还是 npm install，
+        # 无论是否升级 npm 版本、是否关闭 setup-node 的缓存、用 bash 还是 pwsh 执行，
+        # 都稳定复现 npm 自身的 "Exit handler never called!" 假死 bug（社区已知问题，
+        # 例如 npm/cli#7657 等一系列类似 issue），导致依赖安装失败。
+        # yarn 是完全独立的实现，不受此 npm 特有 bug 影响，这里仅在 CI 环境使用；
+        # 本地开发和打包仍然按 README 用 npm 即可，不受影响。
+        run: yarn install --network-timeout 300000
 
       - name: 类型检查
-        run: npm run typecheck
+        run: yarn typecheck
 
       - name: 单元测试
-        run: npm run test
+        run: yarn test
 
       - name: 构建 Windows 安装包（NSIS + 便携版）
-        run: npm run build:win
+        run: yarn build:win
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
