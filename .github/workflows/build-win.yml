@@ -35,7 +35,12 @@ jobs:
         run: npm install -g npm@10.9.2
 
       - name: 安装依赖
-        run: npm ci
+        # 这里刻意用 npm install 而不是 npm ci：
+        # npm ci 在这个 Windows 运行器环境下即使升级了 npm 版本仍然会稳定触发
+        # "Exit handler never called!" 假死 bug（npm/cli#7657 及一系列类似 issue），
+        # 而 npm install 走的是不同的内部实现路径，不受影响。
+        # 项目有提交 package-lock.json，npm install 同样会按锁定的版本精确安装。
+        run: npm install --no-audit --no-fund
 
       - name: 类型检查
         run: npm run typecheck
