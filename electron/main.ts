@@ -9,7 +9,6 @@ import {
   expandWidget,
   collapseWidget,
   setClickThrough,
-  setWindowOpacity,
   setWindowAlwaysOnTop,
   getCurrentBounds
 } from './windowManager'
@@ -75,12 +74,6 @@ function registerWindowIpc(win: BrowserWindow): void {
     setClickThrough(value)
     const settings = getSettings()
     updateSettings({ ...settings, clickThrough: value })
-  })
-
-  ipcMain.on(IPC.WINDOW_SET_OPACITY, (_e, value: number) => {
-    setWindowOpacity(value)
-    const settings = getSettings()
-    updateSettings({ ...settings, opacity: value })
   })
 
   ipcMain.on(IPC.WINDOW_EXPAND_WIDGET, () => expandWidget())

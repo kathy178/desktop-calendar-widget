@@ -101,17 +101,16 @@ export default function SettingsPanel(): JSX.Element {
               ))}
             </select>
           </Row>
-          <Row label={`窗口透明度（${Math.round(settings.opacity * 100)}%）`}>
+          <Row label={`背景不透明度（${Math.round(settings.opacity * 100)}%，100% = 完全不透明）`}>
             <input
               type="range"
-              min={0.3}
+              min={0.4}
               max={1}
               step={0.05}
               value={settings.opacity}
               onChange={(e) => {
                 const v = Number(e.target.value)
                 updateSettings({ opacity: v })
-                window.api.window.setOpacity(v)
               }}
             />
           </Row>

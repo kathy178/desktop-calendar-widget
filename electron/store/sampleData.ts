@@ -1,12 +1,12 @@
 /** 首次启动时的示例数据，帮助用户直观理解功能，而不是打开就是空白 */
 import { genId } from '../../shared/id'
-import type { Memo, Todo } from '../../shared/types'
+import type { CountdownEvent, Memo, Todo } from '../../shared/types'
 
 function fmt(date: Date): string {
   return date.toISOString().slice(0, 10)
 }
 
-export function buildSampleData(): { todos: Todo[]; memos: Memo[] } {
+export function buildSampleData(): { todos: Todo[]; memos: Memo[]; countdowns: CountdownEvent[] } {
   const now = new Date()
   const today = fmt(now)
   const tomorrow = fmt(new Date(now.getTime() + 24 * 3600 * 1000))
@@ -86,5 +86,28 @@ export function buildSampleData(): { todos: Todo[]; memos: Memo[] } {
     }
   ]
 
-  return { todos, memos }
+  const oneHundredDaysAgo = fmt(new Date(now.getTime() - 100 * 24 * 3600 * 1000))
+  const nextOct1 = new Date(now.getFullYear(), 9, 1) // 月份从0开始，9=10月
+  if (nextOct1.getTime() < now.getTime()) nextOct1.setFullYear(nextOct1.getFullYear() + 1)
+
+  const countdowns: CountdownEvent[] = [
+    {
+      id: genId(),
+      title: '国庆节',
+      targetDate: fmt(nextOct1),
+      repeatYearly: true,
+      createdAt: nowIso,
+      updatedAt: nowIso
+    },
+    {
+      id: genId(),
+      title: '开始使用桌面悬浮日历（示例）',
+      targetDate: oneHundredDaysAgo,
+      repeatYearly: false,
+      createdAt: nowIso,
+      updatedAt: nowIso
+    }
+  ]
+
+  return { todos, memos, countdowns }
 }

@@ -3,7 +3,7 @@
  * 渲染进程通过 window.api.xxx 调用，类型在这里统一声明，
  * 避免 any，保证主进程/渲染进程/preload 三端类型同步。
  */
-import type { AppData, Memo, Settings, Todo, ReminderFirePayload, ExportPayload } from './types'
+import type { AppData, CountdownEvent, Memo, Settings, Todo, ReminderFirePayload, ExportPayload } from './types'
 
 export interface DesktopWidgetApi {
   data: {
@@ -19,6 +19,11 @@ export interface DesktopWidgetApi {
     update: (memo: Memo) => Promise<Memo>
     remove: (id: string) => Promise<void>
   }
+  countdown: {
+    create: (item: CountdownEvent) => Promise<CountdownEvent>
+    update: (item: CountdownEvent) => Promise<CountdownEvent>
+    remove: (id: string) => Promise<void>
+  }
   settings: {
     update: (settings: Settings) => Promise<Settings>
   }
@@ -29,7 +34,6 @@ export interface DesktopWidgetApi {
   window: {
     setAlwaysOnTop: (value: boolean) => void
     setClickThrough: (value: boolean) => void
-    setOpacity: (value: number) => void
     expandWidget: () => void
     collapseWidget: () => void
     minimize: () => void
@@ -45,4 +49,4 @@ export interface DesktopWidgetApi {
   }
 }
 
-export type { AppData, Memo, Settings, Todo, ReminderFirePayload, ExportPayload }
+export type { AppData, CountdownEvent, Memo, Settings, Todo, ReminderFirePayload, ExportPayload }

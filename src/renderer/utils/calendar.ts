@@ -72,7 +72,16 @@ export interface DayMeta {
   isRestDay: boolean | null // true=法定假日休息，false=调休上班，null=无特殊安排
 }
 
+// 农历/节假日是"某一天"的固定属性，跟应用状态（待办、备忘录等）完全无关，
+// 一旦算过就永远不会变——用一个简单的 Map 按日期缓存结果，避免月视图 42 个格子
+// 在任何一次界面重绘时都重新跑一遍农历换算，这是之前"卡顿"的主要原因之一。
+const dayMetaCache = new Map<string, DayMeta>()
+
 export function getDayMeta(date: Date): DayMeta {
+  const cacheKey = toDateKey(date)
+  const cached = dayMetaCache.get(cacheKey)
+  if (cached) return cached
+
   let lunarText = ''
   let festivalText: string | null = null
   try {
@@ -94,8 +103,7 @@ export function getDayMeta(date: Date): DayMeta {
   let holidayName: string | null = null
   let isRestDay: boolean | null = null
   try {
-    const key = toDateKey(date)
-    const holiday = HolidayUtil.getHoliday(key)
+    const holiday = HolidayUtil.getHoliday(cacheKey)
     if (holiday) {
       holidayName = holiday.getName()
       isRestDay = !holiday.isWork()
@@ -105,7 +113,9 @@ export function getDayMeta(date: Date): DayMeta {
     isRestDay = null
   }
 
-  return { lunarText, festivalText, holidayName, isRestDay }
+  const meta: DayMeta = { lunarText, festivalText, holidayName, isRestDay }
+  dayMetaCache.set(cacheKey, meta)
+  return meta
 }
 
 export const WEEKDAY_LABELS = ['日', '一', '二', '三', '四', '五', '六']

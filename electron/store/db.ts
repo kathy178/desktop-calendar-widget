@@ -7,7 +7,7 @@
  */
 import Store from 'electron-store'
 import { genId } from '../../shared/id'
-import type { AppData, Memo, Settings, Todo } from '../../shared/types'
+import type { AppData, CountdownEvent, Memo, Settings, Todo } from '../../shared/types'
 import { DEFAULT_SETTINGS } from '../../shared/types'
 import { buildSampleData } from './sampleData'
 
@@ -17,6 +17,7 @@ interface StoreShape {
   version: string
   todos: Todo[]
   memos: Memo[]
+  countdowns: CountdownEvent[]
   settings: Settings
   /** 标记是否已经写入过示例数据，避免用户清空数据后又被重新塞入示例数据 */
   hasSeeded: boolean
@@ -28,6 +29,7 @@ const store = new Store<StoreShape>({
     version: CURRENT_DATA_VERSION,
     todos: [],
     memos: [],
+    countdowns: [],
     settings: DEFAULT_SETTINGS,
     hasSeeded: false
   },
@@ -38,11 +40,13 @@ const store = new Store<StoreShape>({
 /** 首次启动时注入示例数据，方便用户立刻体验功能而不是面对空白页 */
 function ensureSeeded(): void {
   if (store.get('hasSeeded')) return
-  const hasAnyData = store.get('todos').length > 0 || store.get('memos').length > 0
+  const hasAnyData =
+    store.get('todos').length > 0 || store.get('memos').length > 0 || store.get('countdowns').length > 0
   if (!hasAnyData) {
-    const { todos, memos } = buildSampleData()
+    const { todos, memos, countdowns } = buildSampleData()
     store.set('todos', todos)
     store.set('memos', memos)
+    store.set('countdowns', countdowns)
   }
   store.set('hasSeeded', true)
 }
@@ -54,6 +58,7 @@ export function getAllData(): AppData {
     version: store.get('version'),
     todos: store.get('todos'),
     memos: store.get('memos'),
+    countdowns: store.get('countdowns'),
     settings: store.get('settings')
   }
 }
@@ -133,10 +138,46 @@ export function removeMemo(id: string): void {
   store.set('memos', memos)
 }
 
+// ---------- Countdown ----------
+export function createCountdown(
+  input: Omit<CountdownEvent, 'id' | 'createdAt' | 'updatedAt'> & Partial<Pick<CountdownEvent, 'id'>>
+): CountdownEvent {
+  const now = new Date().toISOString()
+  const item: CountdownEvent = {
+    ...input,
+    id: input.id ?? genId(),
+    createdAt: now,
+    updatedAt: now
+  }
+  const countdowns = store.get('countdowns')
+  countdowns.push(item)
+  store.set('countdowns', countdowns)
+  return item
+}
+
+export function updateCountdown(item: CountdownEvent): CountdownEvent {
+  const countdowns = store.get('countdowns')
+  const idx = countdowns.findIndex((c) => c.id === item.id)
+  const next: CountdownEvent = { ...item, updatedAt: new Date().toISOString() }
+  if (idx === -1) {
+    countdowns.push(next)
+  } else {
+    countdowns[idx] = next
+  }
+  store.set('countdowns', countdowns)
+  return next
+}
+
+export function removeCountdown(id: string): void {
+  const countdowns = store.get('countdowns').filter((c) => c.id !== id)
+  store.set('countdowns', countdowns)
+}
+
 // ---------- 导入 / 覆盖（用于数据恢复）----------
-export function replaceAllData(data: Pick<AppData, 'todos' | 'memos' | 'settings'>): AppData {
+export function replaceAllData(data: Pick<AppData, 'todos' | 'memos' | 'countdowns' | 'settings'>): AppData {
   store.set('todos', data.todos)
   store.set('memos', data.memos)
+  store.set('countdowns', data.countdowns)
   store.set('settings', data.settings)
   store.set('hasSeeded', true)
   return getAllData()

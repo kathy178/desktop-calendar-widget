@@ -18,12 +18,23 @@ export function getMainWindow(): BrowserWindow | null {
   return mainWindow
 }
 
+const WINDOW_MIN_WIDTH = 260
+const WINDOW_MIN_HEIGHT = 56
+const WINDOW_MAX_WIDTH = 480
+const WINDOW_MAX_HEIGHT = 900
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value))
+}
+
 export function createMainWindow(settings: Settings): BrowserWindow {
   const primaryDisplay = screen.getPrimaryDisplay()
   const { width: screenWidth } = primaryDisplay.workAreaSize
 
-  const width = settings.windowBounds.width || DEFAULT_WINDOW_SIZE.width
-  const height = settings.windowBounds.height || DEFAULT_WINDOW_SIZE.height
+  // 手动 clamp 一下存下来的窗口尺寸：万一是升级前保存的、或者被外部工具改过的异常数值，
+  // 也不会导致窗口比 minWidth/maxWidth 限制更离谱。
+  const width = clamp(settings.windowBounds.width || DEFAULT_WINDOW_SIZE.width, WINDOW_MIN_WIDTH, WINDOW_MAX_WIDTH)
+  const height = clamp(settings.windowBounds.height || DEFAULT_WINDOW_SIZE.height, WINDOW_MIN_HEIGHT, WINDOW_MAX_HEIGHT)
   // 默认贴到屏幕右侧，符合"侧边悬浮工具"的定位
   const x = settings.windowBounds.x ?? screenWidth - width - 24
   const y = settings.windowBounds.y ?? 60
@@ -33,8 +44,10 @@ export function createMainWindow(settings: Settings): BrowserWindow {
     height,
     x,
     y,
-    minWidth: 260,
-    minHeight: 56,
+    minWidth: WINDOW_MIN_WIDTH,
+    minHeight: WINDOW_MIN_HEIGHT,
+    maxWidth: WINDOW_MAX_WIDTH,
+    maxHeight: WINDOW_MAX_HEIGHT,
     frame: false,
     transparent: true,
     resizable: true,
@@ -52,7 +65,10 @@ export function createMainWindow(settings: Settings): BrowserWindow {
   })
 
   win.setAlwaysOnTop(settings.alwaysOnTop, 'screen-saver')
-  win.setOpacity(Math.min(1, Math.max(0.3, settings.opacity)))
+  // 注意：这里不再调用 win.setOpacity()。
+  // "透明度"设置改为完全由渲染进程的 CSS 背景不透明度控制（见 App.tsx / theme.css），
+  // 这样调低透明度只会让背景变透，文字/图标始终保持 100% 清晰，不会出现"越透明越难读"的问题；
+  // 系统层面的窗口本身永远保持完全不透明。
 
   win.once('ready-to-show', () => win.show())
 
@@ -105,10 +121,6 @@ export function collapseWidget(): void {
 
 export function setClickThrough(enabled: boolean): void {
   mainWindow?.setIgnoreMouseEvents(enabled, { forward: true })
-}
-
-export function setWindowOpacity(value: number): void {
-  mainWindow?.setOpacity(Math.min(1, Math.max(0.3, value)))
 }
 
 export function setWindowAlwaysOnTop(value: boolean): void {

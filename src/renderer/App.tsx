@@ -4,10 +4,12 @@ import { useWidgetMode } from './hooks/useWidgetMode'
 import TitleBar from './components/TitleBar/TitleBar'
 import Header from './components/Header/Header'
 import CalendarView from './components/CalendarView/CalendarView'
+import YearView from './components/CalendarView/YearView'
 import TabBar from './components/TabBar/TabBar'
 import TodayPanel from './components/TodayPanel/TodayPanel'
 import TodoPanel from './components/TodoPanel/TodoPanel'
 import MemoPanel from './components/MemoPanel/MemoPanel'
+import CountdownPanel from './components/CountdownPanel/CountdownPanel'
 import QuickAddButton from './components/QuickAddButton/QuickAddButton'
 import WidgetCapsule from './components/WidgetMode/WidgetCapsule'
 import SettingsPanel from './components/SettingsPanel/SettingsPanel'
@@ -26,6 +28,7 @@ export default function App(): JSX.Element {
   const hydrate = useAppStore((s) => s.hydrate)
   const settings = useAppStore((s) => s.settings)
   const activeTab = useAppStore((s) => s.activeTab)
+  const calendarViewMode = useAppStore((s) => s.calendarViewMode)
   const settingsOpen = useAppStore((s) => s.settingsOpen)
   const setHovering = useAppStore((s) => s.setHovering)
   const pushToast = useAppStore((s) => s.pushToast)
@@ -44,7 +47,7 @@ export default function App(): JSX.Element {
         if (!cancelled) {
           pushToast({ title: '数据加载失败', body: err.message })
           // 加载失败时也要放开 loading 状态，展示一个可用的空白应用，而不是卡死在加载中
-          hydrate({ todos: [], memos: [], settings })
+          hydrate({ todos: [], memos: [], countdowns: [], settings })
         }
       })
     return () => {
@@ -71,6 +74,16 @@ export default function App(): JSX.Element {
     document.documentElement.setAttribute('data-theme', theme)
     document.documentElement.setAttribute('data-font', settings.fontSize)
   }, [settings.theme, settings.fontSize])
+
+  // 背景不透明度：直接写 CSS 变量控制面板背景的 alpha 通道。
+  // 100%（=1）时背景完全不透明、同时关掉毛玻璃模糊——
+  // 既满足"要有完全不透明选项"的需求，文字也不会因为整体调暗而变得难读，
+  // 顺带去掉持续合成模糊带来的性能开销。
+  useEffect(() => {
+    const root = document.documentElement
+    root.style.setProperty('--panel-opacity', String(settings.opacity))
+    root.style.setProperty('--panel-blur', settings.opacity >= 1 ? 'none' : 'blur(24px) saturate(160%)')
+  }, [settings.opacity])
 
   // 跟随系统主题变化（仅当用户选择"跟随系统"时才需要监听）
   useEffect(() => {
@@ -108,9 +121,16 @@ export default function App(): JSX.Element {
       <Header />
       <CalendarView />
       <div className="scroll-area">
-        {activeTab === 'today' && <TodayPanel />}
-        {activeTab === 'todo' && <TodoPanel />}
-        {activeTab === 'memo' && <MemoPanel />}
+        {calendarViewMode === 'year' ? (
+          <YearView />
+        ) : (
+          <>
+            {activeTab === 'today' && <TodayPanel />}
+            {activeTab === 'todo' && <TodoPanel />}
+            {activeTab === 'memo' && <MemoPanel />}
+            {activeTab === 'countdown' && <CountdownPanel />}
+          </>
+        )}
       </div>
       <QuickAddButton />
       <TabBar />

@@ -19,7 +19,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 130px;
+  max-width: 96px;
 }
 
 .navBtn {
@@ -41,13 +41,13 @@
 .right {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-shrink: 0;
 }
 
 .todayBtn {
   font-size: var(--font-sm);
-  padding: 3px 8px;
+  padding: 3px 6px;
   border-radius: var(--radius-sm);
   color: var(--color-text-secondary);
   background: var(--color-hover);
@@ -61,12 +61,12 @@
   background: var(--color-hover);
   border-radius: var(--radius-sm);
   padding: 2px;
-  gap: 2px;
+  gap: 1px;
 }
 
 .viewBtn {
   font-size: var(--font-sm);
-  padding: 3px 7px;
+  padding: 3px 5px;
   border-radius: 6px;
   color: var(--color-text-secondary);
 }

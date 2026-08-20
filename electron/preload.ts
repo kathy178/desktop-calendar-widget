@@ -6,7 +6,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { IPC } from '../shared/ipcChannels'
 import type { DesktopWidgetApi } from '../shared/preloadApi'
-import type { Memo, Settings, Todo, ReminderFirePayload } from '../shared/types'
+import type { CountdownEvent, Memo, Settings, Todo, ReminderFirePayload } from '../shared/types'
 
 const api: DesktopWidgetApi = {
   data: {
@@ -22,6 +22,11 @@ const api: DesktopWidgetApi = {
     update: (memo: Memo) => ipcRenderer.invoke(IPC.MEMO_UPDATE, memo),
     remove: (id: string) => ipcRenderer.invoke(IPC.MEMO_REMOVE, id)
   },
+  countdown: {
+    create: (item: CountdownEvent) => ipcRenderer.invoke(IPC.COUNTDOWN_CREATE, item),
+    update: (item: CountdownEvent) => ipcRenderer.invoke(IPC.COUNTDOWN_UPDATE, item),
+    remove: (id: string) => ipcRenderer.invoke(IPC.COUNTDOWN_REMOVE, id)
+  },
   settings: {
     update: (settings: Settings) => ipcRenderer.invoke(IPC.SETTINGS_UPDATE, settings)
   },
@@ -32,7 +37,6 @@ const api: DesktopWidgetApi = {
   window: {
     setAlwaysOnTop: (value: boolean) => ipcRenderer.send(IPC.WINDOW_SET_ALWAYS_ON_TOP, value),
     setClickThrough: (value: boolean) => ipcRenderer.send(IPC.WINDOW_SET_CLICK_THROUGH, value),
-    setOpacity: (value: number) => ipcRenderer.send(IPC.WINDOW_SET_OPACITY, value),
     expandWidget: () => ipcRenderer.send(IPC.WINDOW_EXPAND_WIDGET),
     collapseWidget: () => ipcRenderer.send(IPC.WINDOW_COLLAPSE_WIDGET),
     minimize: () => ipcRenderer.send(IPC.WINDOW_MINIMIZE),

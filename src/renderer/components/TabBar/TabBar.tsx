@@ -6,7 +6,8 @@ import styles from './TabBar.module.css'
 const TABS: { key: AppTab; label: string; icon: string }[] = [
   { key: 'today', label: '今日', icon: '☀' },
   { key: 'todo', label: '待办', icon: '✓' },
-  { key: 'memo', label: '备忘录', icon: '✎' }
+  { key: 'memo', label: '备忘录', icon: '✎' },
+  { key: 'countdown', label: '倒数日', icon: '⏳' }
 ]
 
 export default function TabBar(): JSX.Element {

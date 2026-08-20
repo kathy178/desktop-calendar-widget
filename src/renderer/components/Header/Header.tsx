@@ -3,6 +3,7 @@ import { formatMonthTitle, formatFullDate, getWeekDays, parseDateKey } from '../
 import styles from './Header.module.css'
 
 function computeTitle(mode: string, monthAnchor: Date, selectedDate: string): string {
+  if (mode === 'year') return `${monthAnchor.getFullYear()}年`
   if (mode === 'month') return formatMonthTitle(monthAnchor)
   if (mode === 'day') return formatFullDate(parseDateKey(selectedDate))
   const days = getWeekDays(parseDateKey(selectedDate))
@@ -41,13 +42,13 @@ export default function Header(): JSX.Element {
           今天
         </button>
         <div className={styles.viewSwitch}>
-          {(['month', 'week', 'day'] as const).map((m) => (
+          {(['year', 'month', 'week', 'day'] as const).map((m) => (
             <button
               key={m}
               className={`${styles.viewBtn} ${calendarViewMode === m ? styles.viewBtnActive : ''}`}
               onClick={() => setCalendarViewMode(m)}
             >
-              {m === 'month' ? '月' : m === 'week' ? '周' : '日'}
+              {{ year: '年', month: '月', week: '周', day: '日' }[m]}
             </button>
           ))}
         </div>

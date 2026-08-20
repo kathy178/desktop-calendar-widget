@@ -1,52 +1,37 @@
+import { memo, useMemo } from 'react'
 import { useAppStore } from '../../store/useAppStore'
 import {
   WEEKDAY_LABELS,
   getDayMeta,
   getMonthGridDays,
   getWeekDays,
-  isSameDay,
   isSameMonth,
   isToday,
   parseDateKey,
   toDateKey
 } from '../../utils/calendar'
-import type { Memo, Todo } from '@shared/types'
+import { buildDotInfoMap, EMPTY_DOT_INFO, type DayDotInfo } from '../../utils/todoUtils'
 import styles from './CalendarView.module.css'
 
-interface DayDotInfo {
-  hasTodo: boolean
-  hasHighPriority: boolean
-  hasMemo: boolean
-}
-
-function computeDotInfo(dateKey: string, todos: Todo[], memos: Memo[]): DayDotInfo {
-  const dayTodos = todos.filter((t) => t.date === dateKey && !t.completed)
-  const dayMemos = memos.filter((m) => m.linkedDate === dateKey)
-  return {
-    hasTodo: dayTodos.length > 0,
-    hasHighPriority: dayTodos.some((t) => t.priority === 'high'),
-    hasMemo: dayMemos.length > 0
-  }
-}
-
-function DayCell({
+const DayCell = memo(function DayCell({
   date,
   inCurrentMonth,
-  compact
+  compact,
+  dots
 }: {
   date: Date
   inCurrentMonth: boolean
   compact?: boolean
+  dots: DayDotInfo
 }): JSX.Element {
-  const todos = useAppStore((s) => s.todos)
-  const memos = useAppStore((s) => s.memos)
-  const selectedDate = useAppStore((s) => s.selectedDate)
+  const dateKey = toDateKey(date)
+  // 只订阅"我是不是被选中"这一个布尔值，而不是整个 selectedDate 字符串——
+  // 这样切换选中日期时，只有"原来选中的格子"和"新选中的格子"这 2 个格子会重渲染，
+  // 而不是所有 42 个格子都重渲染。
+  const selected = useAppStore((s) => s.selectedDate === dateKey)
   const setSelectedDate = useAppStore((s) => s.setSelectedDate)
 
-  const dateKey = toDateKey(date)
   const meta = getDayMeta(date)
-  const dots = computeDotInfo(dateKey, todos, memos)
-  const selected = dateKey === selectedDate
   const today = isToday(date)
 
   const subLabel = meta.holidayName
@@ -84,11 +69,14 @@ function DayCell({
       </span>
     </button>
   )
-}
+})
 
 function MonthView(): JSX.Element {
   const monthAnchor = useAppStore((s) => s.monthAnchor)
-  const days = getMonthGridDays(monthAnchor)
+  const todos = useAppStore((s) => s.todos)
+  const memos = useAppStore((s) => s.memos)
+  const days = useMemo(() => getMonthGridDays(monthAnchor), [monthAnchor])
+  const dotInfoMap = useMemo(() => buildDotInfoMap(todos, memos), [todos, memos])
 
   return (
     <div className={styles.monthGrid}>
@@ -97,16 +85,27 @@ function MonthView(): JSX.Element {
           {label}
         </div>
       ))}
-      {days.map((date) => (
-        <DayCell key={date.toISOString()} date={date} inCurrentMonth={isSameMonth(date, monthAnchor)} />
-      ))}
+      {days.map((date) => {
+        const dateKey = toDateKey(date)
+        return (
+          <DayCell
+            key={dateKey}
+            date={date}
+            inCurrentMonth={isSameMonth(date, monthAnchor)}
+            dots={dotInfoMap.get(dateKey) ?? EMPTY_DOT_INFO}
+          />
+        )
+      })}
     </div>
   )
 }
 
 function WeekView(): JSX.Element {
   const selectedDate = useAppStore((s) => s.selectedDate)
-  const days = getWeekDays(parseDateKey(selectedDate))
+  const todos = useAppStore((s) => s.todos)
+  const memos = useAppStore((s) => s.memos)
+  const days = useMemo(() => getWeekDays(parseDateKey(selectedDate)), [selectedDate])
+  const dotInfoMap = useMemo(() => buildDotInfoMap(todos, memos), [todos, memos])
 
   return (
     <div className={styles.weekGrid}>
@@ -115,9 +114,18 @@ function WeekView(): JSX.Element {
           {label}
         </div>
       ))}
-      {days.map((date) => (
-        <DayCell key={date.toISOString()} date={date} inCurrentMonth compact />
-      ))}
+      {days.map((date) => {
+        const dateKey = toDateKey(date)
+        return (
+          <DayCell
+            key={dateKey}
+            date={date}
+            inCurrentMonth
+            compact
+            dots={dotInfoMap.get(dateKey) ?? EMPTY_DOT_INFO}
+          />
+        )
+      })}
     </div>
   )
 }
@@ -143,8 +151,12 @@ function DayView(): JSX.Element {
   )
 }
 
-export default function CalendarView(): JSX.Element {
+export default function CalendarView(): JSX.Element | null {
   const calendarViewMode = useAppStore((s) => s.calendarViewMode)
+
+  // 年视图不需要这个"固定高度的月/周/日格子区"，它自己就是主内容
+  // （放在下方可滚动区域里，见 App.tsx），这里直接不渲染任何东西。
+  if (calendarViewMode === 'year') return null
 
   return (
     <div className={styles.calendarView}>
@@ -154,5 +166,3 @@ export default function CalendarView(): JSX.Element {
     </div>
   )
 }
-
-export { isSameDay }

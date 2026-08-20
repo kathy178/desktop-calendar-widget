@@ -7,7 +7,7 @@
  */
 import { create } from 'zustand'
 import { genId } from '@shared/id'
-import type { AppTab, CalendarViewMode, Memo, Settings, Todo } from '@shared/types'
+import type { AppTab, CalendarViewMode, CountdownEvent, Memo, Settings, Todo } from '@shared/types'
 import { DEFAULT_SETTINGS } from '@shared/types'
 import { toDateKey, parseDateKey } from '../utils/calendar'
 
@@ -22,6 +22,7 @@ interface AppState {
   // 数据
   todos: Todo[]
   memos: Memo[]
+  countdowns: CountdownEvent[]
   settings: Settings
   loaded: boolean
 
@@ -36,7 +37,7 @@ interface AppState {
   settingsOpen: boolean
 
   // 初始化
-  hydrate: (payload: { todos: Todo[]; memos: Memo[]; settings: Settings }) => void
+  hydrate: (payload: { todos: Todo[]; memos: Memo[]; countdowns: CountdownEvent[]; settings: Settings }) => void
 
   // Todo actions
   addTodo: (input: Omit<Todo, 'id' | 'createdAt' | 'updatedAt' | 'reminderFiredAt'>) => Promise<void>
@@ -50,6 +51,11 @@ interface AppState {
   toggleMemoPinned: (id: string) => Promise<void>
   deleteMemo: (id: string) => Promise<void>
 
+  // Countdown actions
+  addCountdown: (input: Omit<CountdownEvent, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
+  editCountdown: (item: CountdownEvent) => Promise<void>
+  deleteCountdown: (id: string) => Promise<void>
+
   // Settings actions
   updateSettings: (patch: Partial<Settings>) => Promise<void>
 
@@ -59,6 +65,8 @@ interface AppState {
   goToToday: () => void
   goToPrevMonth: () => void
   goToNextMonth: () => void
+  goToPrevYear: () => void
+  goToNextYear: () => void
   goToPrevWeek: () => void
   goToNextWeek: () => void
   goToPrevDay: () => void
@@ -78,6 +86,7 @@ const today = new Date()
 export const useAppStore = create<AppState>((set, get) => ({
   todos: [],
   memos: [],
+  countdowns: [],
   settings: DEFAULT_SETTINGS,
   loaded: false,
 
@@ -90,7 +99,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   toasts: [],
   settingsOpen: false,
 
-  hydrate: ({ todos, memos, settings }) => set({ todos, memos, settings, loaded: true }),
+  hydrate: ({ todos, memos, countdowns, settings }) => set({ todos, memos, countdowns, settings, loaded: true }),
 
   addTodo: async (input) => {
     const now = new Date().toISOString()
@@ -182,6 +191,42 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
 
+  addCountdown: async (input) => {
+    const now = new Date().toISOString()
+    const optimistic: CountdownEvent = { ...input, id: genId(), createdAt: now, updatedAt: now }
+    set((s) => ({ countdowns: [...s.countdowns, optimistic] }))
+    try {
+      const saved = await window.api.countdown.create(optimistic)
+      set((s) => ({ countdowns: s.countdowns.map((c) => (c.id === optimistic.id ? saved : c)) }))
+    } catch (err) {
+      set((s) => ({ countdowns: s.countdowns.filter((c) => c.id !== optimistic.id) }))
+      get().pushToast({ title: '保存失败', body: (err as Error).message })
+    }
+  },
+
+  editCountdown: async (item) => {
+    const prev = get().countdowns
+    set((s) => ({ countdowns: s.countdowns.map((c) => (c.id === item.id ? item : c)) }))
+    try {
+      const saved = await window.api.countdown.update(item)
+      set((s) => ({ countdowns: s.countdowns.map((c) => (c.id === saved.id ? saved : c)) }))
+    } catch (err) {
+      set({ countdowns: prev })
+      get().pushToast({ title: '更新失败', body: (err as Error).message })
+    }
+  },
+
+  deleteCountdown: async (id) => {
+    const prev = get().countdowns
+    set((s) => ({ countdowns: s.countdowns.filter((c) => c.id !== id) }))
+    try {
+      await window.api.countdown.remove(id)
+    } catch (err) {
+      set({ countdowns: prev })
+      get().pushToast({ title: '删除失败', body: (err as Error).message })
+    }
+  },
+
   updateSettings: async (patch) => {
     const prev = get().settings
     const next = { ...prev, ...patch }
@@ -210,6 +255,18 @@ export const useAppStore = create<AppState>((set, get) => ({
       d.setMonth(d.getMonth() + 1)
       return { monthAnchor: d }
     }),
+  goToPrevYear: () =>
+    set((s) => {
+      const d = new Date(s.monthAnchor)
+      d.setFullYear(d.getFullYear() - 1)
+      return { monthAnchor: d }
+    }),
+  goToNextYear: () =>
+    set((s) => {
+      const d = new Date(s.monthAnchor)
+      d.setFullYear(d.getFullYear() + 1)
+      return { monthAnchor: d }
+    }),
   goToPrevWeek: () =>
     set((s) => {
       const d = parseDateKey(s.selectedDate)
@@ -236,13 +293,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     }),
   goPrev: () => {
     const mode = get().calendarViewMode
-    if (mode === 'month') get().goToPrevMonth()
+    if (mode === 'year') get().goToPrevYear()
+    else if (mode === 'month') get().goToPrevMonth()
     else if (mode === 'week') get().goToPrevWeek()
     else get().goToPrevDay()
   },
   goNext: () => {
     const mode = get().calendarViewMode
-    if (mode === 'month') get().goToNextMonth()
+    if (mode === 'year') get().goToNextYear()
+    else if (mode === 'month') get().goToNextMonth()
     else if (mode === 'week') get().goToNextWeek()
     else get().goToNextDay()
   },

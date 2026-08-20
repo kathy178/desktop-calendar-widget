@@ -1,0 +1,83 @@
+.panel {
+  padding: 8px 14px 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  text-align: left;
+}
+.card:hover {
+  background: var(--color-hover);
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-base);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date {
+  font-size: var(--font-sm);
+  color: var(--color-muted);
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  line-height: 1;
+  min-width: 56px;
+}
+
+.smallLabel {
+  font-size: 9px;
+  color: var(--color-muted);
+  margin-bottom: 2px;
+}
+
+.bigNumber {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.unit {
+  font-size: 9px;
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+
+.bigText {
+  font-size: var(--font-base);
+  font-weight: 700;
+  color: var(--color-danger);
+}
+
+.future .bigNumber {
+  color: var(--color-accent);
+}
+.past .bigNumber {
+  color: var(--color-success);
+}
+.today .bigText {
+  color: var(--color-danger);
+}

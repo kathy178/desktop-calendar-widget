@@ -12,10 +12,16 @@
   --color-danger-soft: #FBE3E1;
   --color-warning: #E3A23C;
   --color-success: #59B884;
+
+  /* 背景不透明度 / 是否开启毛玻璃模糊：由 App.tsx 根据"设置-背景不透明度"动态写入。
+     --panel-opacity = 1 时背景完全不透明，--panel-blur 也会被同步设为 none，
+     既满足"要有完全不透明选项"的诉求，也顺带去掉了最耗性能的模糊合成。 */
+  --panel-opacity: 1;
+  --panel-blur: none;
 }
 
 [data-theme='light'] {
-  --color-bg: rgba(247, 247, 250, 0.72);
+  --color-bg: rgba(247, 247, 250, var(--panel-opacity));
   --color-bg-solid: #F7F7FA;
   --color-panel: rgba(255, 255, 255, 0.55);
   --color-panel-solid: #FFFFFF;
@@ -29,7 +35,7 @@
 }
 
 [data-theme='dark'] {
-  --color-bg: rgba(28, 30, 38, 0.72);
+  --color-bg: rgba(28, 30, 38, var(--panel-opacity));
   --color-bg-solid: #1C1E26;
   --color-panel: rgba(38, 41, 51, 0.6);
   --color-panel-solid: #262933;

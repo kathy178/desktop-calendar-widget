@@ -6,7 +6,11 @@
 .monthGrid,
 .weekGrid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  /* 用 minmax(0, 1fr) 而不是单纯的 1fr：
+     节假日名称（教师节/中秋节/国庆节等3个字）配合 white-space: nowrap 会让浏览器
+     按"内容最小宽度"撑大所在列，进而撑破整个 7 列网格导致右侧被裁掉（9月布局错位的真正原因）。
+     minmax(0, 1fr) 强制让列宽严格按比例分配，不被子元素内容的最小宽度需求影响。 */
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 2px;
 }
 
@@ -27,6 +31,10 @@
   gap: 1px;
   position: relative;
   color: var(--color-text);
+  /* 网格子项默认的最小宽度是"内容的最小宽度"，配合上面的 minmax(0, 1fr) 双重保险，
+     确保格子本身也不会因为里面的文字而被撑大 */
+  min-width: 0;
+  overflow: hidden;
 }
 .dayCell:hover {
   background: var(--color-hover);

@@ -4,7 +4,7 @@
 import { ipcMain, dialog, app, BrowserWindow } from 'electron'
 import { writeFileSync, readFileSync } from 'fs'
 import { IPC } from '../../shared/ipcChannels'
-import type { Memo, Settings, Todo, ExportPayload } from '../../shared/types'
+import type { CountdownEvent, Memo, Settings, Todo, ExportPayload } from '../../shared/types'
 import * as db from '../store/db'
 
 export function registerIpcHandlers(getMainWindow: () => BrowserWindow | null): void {
@@ -17,6 +17,10 @@ export function registerIpcHandlers(getMainWindow: () => BrowserWindow | null): 
   ipcMain.handle(IPC.MEMO_CREATE, (_e, memo: Memo) => db.createMemo(memo))
   ipcMain.handle(IPC.MEMO_UPDATE, (_e, memo: Memo) => db.updateMemo(memo))
   ipcMain.handle(IPC.MEMO_REMOVE, (_e, id: string) => db.removeMemo(id))
+
+  ipcMain.handle(IPC.COUNTDOWN_CREATE, (_e, item: CountdownEvent) => db.createCountdown(item))
+  ipcMain.handle(IPC.COUNTDOWN_UPDATE, (_e, item: CountdownEvent) => db.updateCountdown(item))
+  ipcMain.handle(IPC.COUNTDOWN_REMOVE, (_e, id: string) => db.removeCountdown(id))
 
   ipcMain.handle(IPC.SETTINGS_UPDATE, (_e, settings: Settings) => {
     const next = db.updateSettings(settings)
@@ -62,6 +66,7 @@ export function registerIpcHandlers(getMainWindow: () => BrowserWindow | null): 
       const data = db.replaceAllData({
         todos: parsed.todos,
         memos: parsed.memos,
+        countdowns: Array.isArray(parsed.countdowns) ? parsed.countdowns : [],
         settings: parsed.settings
       })
       applySettingsSideEffects(data.settings, win)
@@ -76,7 +81,6 @@ export function registerIpcHandlers(getMainWindow: () => BrowserWindow | null): 
 export function applySettingsSideEffects(settings: Settings, win: BrowserWindow | null): void {
   if (win) {
     win.setAlwaysOnTop(settings.alwaysOnTop, 'screen-saver')
-    win.setOpacity(Math.min(1, Math.max(0.3, settings.opacity)))
   }
   try {
     app.setLoginItemSettings({ openAtLogin: settings.autoLaunch })

@@ -14,9 +14,9 @@ export type FontSize = 'small' | 'medium' | 'large'
 
 export type MemoColor = 'yellow' | 'blue' | 'green' | 'pink' | 'purple' | 'gray'
 
-export type CalendarViewMode = 'month' | 'week' | 'day'
+export type CalendarViewMode = 'year' | 'month' | 'week' | 'day'
 
-export type AppTab = 'today' | 'todo' | 'memo'
+export type AppTab = 'today' | 'todo' | 'memo' | 'countdown'
 
 export interface ReminderConfig {
   enabled: boolean
@@ -55,6 +55,18 @@ export interface Memo {
   updatedAt: string
 }
 
+/** 倒数日：距离某个日期还有多少天 / 已经过去多少天 */
+export interface CountdownEvent {
+  id: string
+  title: string
+  /** YYYY-MM-DD */
+  targetDate: string
+  /** 每年重复（如生日、纪念日），到期后自动按"下一次出现的日期"计算 */
+  repeatYearly: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export interface Settings {
   autoLaunch: boolean
   alwaysOnTop: boolean
@@ -71,6 +83,7 @@ export interface AppData {
   version: string
   todos: Todo[]
   memos: Memo[]
+  countdowns: CountdownEvent[]
   settings: Settings
 }
 

@@ -1,6 +1,40 @@
 import type { Memo, Priority, Todo } from '@shared/types'
 import { toDateKey } from './calendar'
 
+export interface DayDotInfo {
+  hasTodo: boolean
+  hasHighPriority: boolean
+  hasMemo: boolean
+}
+
+export const EMPTY_DOT_INFO: DayDotInfo = { hasTodo: false, hasHighPriority: false, hasMemo: false }
+
+/**
+ * 把"每天有没有待办/备忘录"一次性算好存成一张表，而不是让每个日期格子各自
+ * 遍历一遍完整的 todos/memos 数组——月视图/年视图有几十到几百个格子，
+ * 之前的写法相当于每次任何一条待办变化都要做几十上百次全量遍历，是卡顿的主要原因之一。
+ */
+export function buildDotInfoMap(todos: Todo[], memos: Memo[]): Map<string, DayDotInfo> {
+  const map = new Map<string, DayDotInfo>()
+
+  for (const todo of todos) {
+    if (todo.completed || !todo.date) continue
+    const info = map.get(todo.date) ?? { hasTodo: false, hasHighPriority: false, hasMemo: false }
+    info.hasTodo = true
+    if (todo.priority === 'high') info.hasHighPriority = true
+    map.set(todo.date, info)
+  }
+
+  for (const memo of memos) {
+    if (!memo.linkedDate) continue
+    const info = map.get(memo.linkedDate) ?? { hasTodo: false, hasHighPriority: false, hasMemo: false }
+    info.hasMemo = true
+    map.set(memo.linkedDate, info)
+  }
+
+  return map
+}
+
 export function isOverdue(todo: Todo, today: Date): boolean {
   if (todo.completed || !todo.date) return false
   const todoDate = todo.date

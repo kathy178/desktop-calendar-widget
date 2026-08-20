@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { useAppStore } from '../../store/useAppStore'
 import TodoEditModal from '../TodoPanel/TodoEditModal'
 import MemoEditModal from '../MemoPanel/MemoEditModal'
+import CountdownEditModal from '../CountdownPanel/CountdownEditModal'
 import styles from './QuickAddButton.module.css'
 
 export default function QuickAddButton(): JSX.Element {
   const selectedDate = useAppStore((s) => s.selectedDate)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [mode, setMode] = useState<'todo' | 'memo' | null>(null)
+  const [mode, setMode] = useState<'todo' | 'memo' | 'countdown' | null>(null)
 
   return (
     <div className={`${styles.wrapper} no-drag`}>
@@ -31,6 +32,15 @@ export default function QuickAddButton(): JSX.Element {
           >
             ✎ 快速记录
           </button>
+          <button
+            className={styles.menuItem}
+            onClick={() => {
+              setMode('countdown')
+              setMenuOpen(false)
+            }}
+          >
+            ⏳ 新建倒数日
+          </button>
         </div>
       )}
       <button className={styles.fab} onClick={() => setMenuOpen((v) => !v)} aria-label="新增">
@@ -39,6 +49,7 @@ export default function QuickAddButton(): JSX.Element {
 
       {mode === 'todo' && <TodoEditModal defaultDate={selectedDate} onClose={() => setMode(null)} />}
       {mode === 'memo' && <MemoEditModal quickMode defaultDate={selectedDate} onClose={() => setMode(null)} />}
+      {mode === 'countdown' && <CountdownEditModal onClose={() => setMode(null)} />}
     </div>
   )
 }
