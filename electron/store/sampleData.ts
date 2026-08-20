@@ -1,5 +1,5 @@
 /** 首次启动时的示例数据，帮助用户直观理解功能，而不是打开就是空白 */
-import { nanoid } from 'nanoid'
+import { genId } from '../../shared/id'
 import type { Memo, Todo } from '../../shared/types'
 
 function fmt(date: Date): string {
@@ -14,7 +14,7 @@ export function buildSampleData(): { todos: Todo[]; memos: Memo[] } {
 
   const todos: Todo[] = [
     {
-      id: nanoid(),
+      id: genId(),
       title: '欢迎使用桌面悬浮日历 —— 点击我可以编辑或完成',
       date: today,
       time: '09:30',
@@ -29,7 +29,7 @@ export function buildSampleData(): { todos: Todo[]; memos: Memo[] } {
       reminderFiredAt: null
     },
     {
-      id: nanoid(),
+      id: genId(),
       title: '周会材料准备',
       date: today,
       time: '14:00',
@@ -44,7 +44,7 @@ export function buildSampleData(): { todos: Todo[]; memos: Memo[] } {
       reminderFiredAt: null
     },
     {
-      id: nanoid(),
+      id: genId(),
       title: '给自己倒杯水，起来走动一下',
       date: tomorrow,
       time: null,
@@ -62,7 +62,7 @@ export function buildSampleData(): { todos: Todo[]; memos: Memo[] } {
 
   const memos: Memo[] = [
     {
-      id: nanoid(),
+      id: genId(),
       title: '使用小提示',
       content:
         '右下角「+」可以快速新增待办或备忘录；把鼠标移到收起的小组件上会自动展开完整面板；设置里可以调整透明度、置顶和点击穿透。',
@@ -74,7 +74,7 @@ export function buildSampleData(): { todos: Todo[]; memos: Memo[] } {
       updatedAt: nowIso
     },
     {
-      id: nanoid(),
+      id: genId(),
       title: '临时记录',
       content: '这是一条示例备忘录，可以随时编辑或删除。',
       linkedDate: today,

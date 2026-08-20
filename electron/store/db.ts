@@ -6,7 +6,7 @@
  *   Windows: %APPDATA%/桌面悬浮日历/app-data.json
  */
 import Store from 'electron-store'
-import { nanoid } from 'nanoid'
+import { genId } from '../../shared/id'
 import type { AppData, Memo, Settings, Todo } from '../../shared/types'
 import { DEFAULT_SETTINGS } from '../../shared/types'
 import { buildSampleData } from './sampleData'
@@ -72,7 +72,7 @@ export function createTodo(input: Omit<Todo, 'id' | 'createdAt' | 'updatedAt'> &
   const now = new Date().toISOString()
   const todo: Todo = {
     ...input,
-    id: input.id ?? nanoid(),
+    id: input.id ?? genId(),
     createdAt: now,
     updatedAt: now
   }
@@ -105,7 +105,7 @@ export function createMemo(input: Omit<Memo, 'id' | 'createdAt' | 'updatedAt'> &
   const now = new Date().toISOString()
   const memo: Memo = {
     ...input,
-    id: input.id ?? nanoid(),
+    id: input.id ?? genId(),
     createdAt: now,
     updatedAt: now
   }

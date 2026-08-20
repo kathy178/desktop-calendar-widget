@@ -6,7 +6,7 @@
  * 单 store 让联动逻辑更直接，避免多个 store 之间互相订阅的复杂度。
  */
 import { create } from 'zustand'
-import { nanoid } from 'nanoid'
+import { genId } from '@shared/id'
 import type { AppTab, CalendarViewMode, Memo, Settings, Todo } from '@shared/types'
 import { DEFAULT_SETTINGS } from '@shared/types'
 import { toDateKey, parseDateKey } from '../utils/calendar'
@@ -94,7 +94,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   addTodo: async (input) => {
     const now = new Date().toISOString()
-    const optimistic: Todo = { ...input, id: nanoid(), createdAt: now, updatedAt: now, reminderFiredAt: null }
+    const optimistic: Todo = { ...input, id: genId(), createdAt: now, updatedAt: now, reminderFiredAt: null }
     set((s) => ({ todos: [...s.todos, optimistic] }))
     try {
       const saved = await window.api.todo.create(optimistic)
@@ -142,7 +142,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   addMemo: async (input) => {
     const now = new Date().toISOString()
-    const optimistic: Memo = { ...input, id: nanoid(), createdAt: now, updatedAt: now }
+    const optimistic: Memo = { ...input, id: genId(), createdAt: now, updatedAt: now }
     set((s) => ({ memos: [...s.memos, optimistic] }))
     try {
       const saved = await window.api.memo.create(optimistic)
@@ -249,7 +249,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setSelectedDate: (dateKey) => set({ selectedDate: dateKey, monthAnchor: parseDateKey(dateKey) }),
   setCollapsed: (collapsed) => set({ collapsed }),
   setHovering: (hovering) => set({ hovering }),
-  pushToast: (toast) => set((s) => ({ toasts: [...s.toasts, { ...toast, id: nanoid() }] })),
+  pushToast: (toast) => set((s) => ({ toasts: [...s.toasts, { ...toast, id: genId() }] })),
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
   setSettingsOpen: (open) => set({ settingsOpen: open })
 }))
