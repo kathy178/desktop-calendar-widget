@@ -11,7 +11,6 @@
     "typecheck": "tsc --noEmit -p tsconfig.node.json --composite false && tsc --noEmit -p tsconfig.web.json --composite false",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "vitest run",
-    "postinstall": "electron-builder install-app-deps",
     "build:win": "npm run build && electron-builder --win --x64",
     "build:win:portable": "npm run build && electron-builder --win portable --x64"
   },
