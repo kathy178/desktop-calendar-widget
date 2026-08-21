@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useAppStore } from './store/useAppStore'
 import { useWidgetMode } from './hooks/useWidgetMode'
 import TitleBar from './components/TitleBar/TitleBar'
+import ProgressStrip from './components/ProgressStrip/ProgressStrip'
 import Header from './components/Header/Header'
 import CalendarView from './components/CalendarView/CalendarView'
 import YearView from './components/CalendarView/YearView'
@@ -112,6 +113,7 @@ export default function App(): JSX.Element {
   return (
     <div className="app-shell">
       <TitleBar />
+      <ProgressStrip />
       <Header />
       <CalendarView />
       <div className="scroll-area">

@@ -28,7 +28,7 @@
   color: var(--color-accent);
 }
 
-.count {
+.weekday {
   font-size: 10px;
   color: var(--color-text-secondary);
 }
