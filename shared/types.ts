@@ -75,7 +75,6 @@ export interface Settings {
   opacity: number
   clickThrough: boolean
   reminderEnabled: boolean
-  autoCollapseWidget: boolean
   windowBounds: { x: number | null; y: number | null; width: number; height: number }
 }
 
@@ -98,7 +97,6 @@ export const DEFAULT_SETTINGS: Settings = {
   opacity: 1,
   clickThrough: false,
   reminderEnabled: true,
-  autoCollapseWidget: true,
   windowBounds: { x: null, y: null, width: DEFAULT_WINDOW_SIZE.width, height: DEFAULT_WINDOW_SIZE.height }
 }
 

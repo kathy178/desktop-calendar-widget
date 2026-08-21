@@ -30,7 +30,6 @@ export default function App(): JSX.Element {
   const activeTab = useAppStore((s) => s.activeTab)
   const calendarViewMode = useAppStore((s) => s.calendarViewMode)
   const settingsOpen = useAppStore((s) => s.settingsOpen)
-  const setHovering = useAppStore((s) => s.setHovering)
   const pushToast = useAppStore((s) => s.pushToast)
 
   const { isPanelVisible } = useWidgetMode()
@@ -104,19 +103,14 @@ export default function App(): JSX.Element {
 
   if (!isPanelVisible) {
     return (
-      <div
-        className="app-shell"
-        style={{ background: 'transparent', boxShadow: 'none', border: 'none', backdropFilter: 'none' }}
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
-      >
+      <div className="app-shell" style={{ background: 'transparent', boxShadow: 'none', border: 'none', backdropFilter: 'none' }}>
         <WidgetCapsule />
       </div>
     )
   }
 
   return (
-    <div className="app-shell" onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)}>
+    <div className="app-shell">
       <TitleBar />
       <Header />
       <CalendarView />

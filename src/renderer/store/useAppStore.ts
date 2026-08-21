@@ -32,7 +32,6 @@ interface AppState {
   monthAnchor: Date
   selectedDate: string
   collapsed: boolean
-  hovering: boolean
   toasts: ToastItem[]
   settingsOpen: boolean
 
@@ -75,7 +74,6 @@ interface AppState {
   goNext: () => void
   setSelectedDate: (dateKey: string) => void
   setCollapsed: (collapsed: boolean) => void
-  setHovering: (hovering: boolean) => void
   pushToast: (toast: Omit<ToastItem, 'id'>) => void
   dismissToast: (id: string) => void
   setSettingsOpen: (open: boolean) => void
@@ -95,7 +93,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   monthAnchor: today,
   selectedDate: toDateKey(today),
   collapsed: false,
-  hovering: false,
   toasts: [],
   settingsOpen: false,
 
@@ -307,7 +304,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   setSelectedDate: (dateKey) => set({ selectedDate: dateKey, monthAnchor: parseDateKey(dateKey) }),
   setCollapsed: (collapsed) => set({ collapsed }),
-  setHovering: (hovering) => set({ hovering }),
   pushToast: (toast) => set((s) => ({ toasts: [...s.toasts, { ...toast, id: genId() }] })),
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
   setSettingsOpen: (open) => set({ settingsOpen: open })

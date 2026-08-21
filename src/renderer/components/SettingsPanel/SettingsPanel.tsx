@@ -57,12 +57,6 @@ export default function SettingsPanel(): JSX.Element {
           <Row label="开机自启动">
             <Switch checked={settings.autoLaunch} onChange={(v) => updateSettings({ autoLaunch: v })} />
           </Row>
-          <Row label="鼠标移出后自动收起小组件">
-            <Switch
-              checked={settings.autoCollapseWidget}
-              onChange={(v) => updateSettings({ autoCollapseWidget: v })}
-            />
-          </Row>
           <Row label="点击穿透（收起为小组件时，鼠标可穿过它点击后面的内容）">
             <Switch checked={settings.clickThrough} onChange={(v) => updateSettings({ clickThrough: v })} />
           </Row>
